@@ -41,10 +41,15 @@ fun limpiarCatalogo (ruta: string) : unit =
 
 fun mostrarMenuCreador () : unit = print "\n=== CREADOR - GESTION BIBLIOTECARIA ===\n1. Agregar libro\n2. Limpiar catalogo\n3. Salir\nOpcion: ";
 
+fun leerOpcion () : string =
+    case TextIO.inputLine TextIO.stdIn of
+        NONE => ""
+      | SOME linea => String.substring (linea, 0, String.size linea - 1);
+
 fun cicloCreador (ruta: string) : unit =
     let
         val _ = mostrarMenuCreador ()
-        val opcion = pedirTexto ""
+        val opcion = leerOpcion ()
     in
         case opcion of
             "1" => (agregarLibro (ruta, pedirLibro ()); print "Libro agregado.\n"; cicloCreador ruta)
