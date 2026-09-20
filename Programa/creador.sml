@@ -31,3 +31,31 @@ fun agregarLibro (ruta: string, lib: libro) : unit = let val salida = TextIO.ope
 (*TextIO.openAppend abre un archivo en modo de escritura al final*)
 (*TextIO.output escribe en el archivo*)
 (*TextIO.closeOut cierra el archivo*)
+
+fun limpiarCatalogo (ruta: string) : unit =
+    let
+        val salida = TextIO.openOut ruta
+    in
+        TextIO.closeOut salida
+    end;
+
+fun mostrarMenuCreador () : unit = print "\n=== CREADOR - GESTION BIBLIOTECARIA ===\n1. Agregar libro\n2. Limpiar catalogo\n3. Salir\nOpcion: ";
+
+fun cicloCreador (ruta: string) : unit =
+    let
+        val _ = mostrarMenuCreador ()
+        val opcion = pedirTexto ""
+    in
+        case opcion of
+            "1" => (agregarLibro (ruta, pedirLibro ()); print "Libro agregado.\n"; cicloCreador ruta)
+          | "2" => (limpiarCatalogo ruta; print "Catalogo limpiado.\n"; cicloCreador ruta)
+          | "3" => print "Saliendo...\n"
+          | _   => (print "Opcion invalida.\n"; cicloCreador ruta)
+    end;
+
+fun main () : unit =
+    let
+        val ruta = pedirTexto "Ingrese la ruta del archivo del catalogo"
+    in
+        cicloCreador ruta
+    end;
