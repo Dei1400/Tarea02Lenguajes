@@ -19,7 +19,44 @@ fun pedirTexto (mensaje: string) : string = let val _ = print (mensaje ^ ": ") i
 (*TextIO.inputLine lee una línea de texto desde la entrada estándar*)
 (*String.substring toma un substring de un string dado un índice inicial y una longitud*)
 
-fun pedirLibro () : libro = let val codigo = pedirTexto "Codigo del libro" val autor = pedirTexto "Autor" val genero = pedirTexto "Genero" val fecha = pedirTexto "Fecha de publicacion (YYYY-MM-DD)" val copiasStr = pedirTexto "Copias disponibles" in (codigo, autor, genero, fecha, valOf (Int.fromString copiasStr)) end;
+fun pedirTextoValido (mensaje: string) : string =
+    let
+        val texto = pedirTexto mensaje
+    in
+        if texto = ""
+        then (print "Error: no puede estar vacio.\n"; pedirTextoValido mensaje)
+        else texto
+    end;
+(*si el texto esta vacio, muestra error y se vuelve a pedir a si misma*)
+
+fun pedirFechaValida () : string =
+    let
+        val fecha = pedirTexto "Fecha de publicacion (YYYY-MM-DD)"
+    in
+        if String.size fecha = 10
+        then fecha
+        else (print "Error: la fecha debe tener 10 caracteres, formato YYYY-MM-DD.\n"; pedirFechaValida ())
+    end;
+
+fun pedirCopiasValidas () : int =
+    let
+        val copiasStr = pedirTexto "Copias disponibles"
+    in
+        case Int.fromString copiasStr of
+            SOME n => if n >= 0 then n else (print "Error: las copias no pueden ser negativas.\n"; pedirCopiasValidas ())
+          | NONE => (print "Error: debe ingresar un numero valido.\n"; pedirCopiasValidas ())
+    end;
+
+fun pedirLibro () : libro =
+    let
+        val codigo = pedirTextoValido "Codigo del libro"
+        val autor = pedirTextoValido "Autor"
+        val genero = pedirTextoValido "Genero"
+        val fecha = pedirFechaValida ()
+        val copias = pedirCopiasValidas ()
+    in
+        (codigo, autor, genero, fecha, copias)
+    end;
 (*pedir libro pide al usuario los datos de un libro y devuelve un valor de tipo libro*)
 
 fun libroALinea (lib: libro) : string = let val (codigo, autor, genero, fecha, copias) = lib in codigo ^ "," ^ autor ^ "," ^ genero ^ "," ^ fecha ^ "," ^ Int.toString copias end;
